@@ -9,7 +9,7 @@ local modname = minetest.get_current_modname()
 local modpath = minetest.get_modpath(modname)
 local S = minetest.get_translator(modname)
 
-player_stats = {
+player_attributes = {
 	author = "flux",
 	license = "AGPL_v3",
 	version = os.time({ year = 2022, month = 11, day = 22 }),
@@ -31,6 +31,6 @@ player_stats = {
 	end,
 }
 
-player_stats.dofile("api")
+player_attributes.dofile("api")
 
-player_stats.mod_storage = nil
+player_attributes.mod_storage = nil

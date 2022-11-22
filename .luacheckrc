@@ -1,4 +1,4 @@
-std = "lua51+luajit+minetest+player_stats"
+std = "lua51+luajit+minetest+player_attributes"
 unused_args = false
 max_line_length = 120
 
@@ -631,9 +631,9 @@ stds.minetest = {
 	}
 }
 
-stds.player_stats = {
+stds.player_attributes = {
 	globals = {
-		"player_stats",
+		"player_attributes",
 	},
 	read_globals = {
 		"futil",

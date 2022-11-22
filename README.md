@@ -1,30 +1,36 @@
-# player_stats
+# player_attributes
 
-API for defining player stats which affect player physics and other things
+API for defining abstract, compositional player attributes which can be used for various things.
+
+these are sort of like player_monoids, but with optional persistence, a unified means of accessing the values,
+and without anything binding them to "real" quantities like player physics.
+
+these attributes are intended to be affected by some mods (e.g. magic systems or hunger systems) and
+trigger effects controlled by other mods (e.g. attributeus effects).
 
 ```lua
--- register a basic stat
-player_stats.api.register_stat("strength")
+-- register a basic attribute
+player_attributes.api.register_attribute("strength")
 
 -- add some strength due to player level
-player_stats.api.set_stat_value(player, "strength", "level", 5)
+player_attributes.api.set_value(player, "strength", "level", 5)
 
 -- add some strength due to temporary effect
-player_stats.api.set_stat_value(player, "strength", "potion", 1)
+player_attributes.api.set_temp_value(player, "strength", "potion", 1)
 
--- get stat
-player_stats.api.get_stat(player, "strength") -- 6
+-- get attribute
+player_attributes.api.get_attribute(player, "strength") -- 6
 
 -- remove strength due to temporary effect
-player_stats.api.set_stat_value(player, "strength", "potion", nil)
+player_attributes.api.set_temp_value(player, "strength", "potion", nil)
 
--- register a stat w/ an initial value
-player_stats.api.register_stat("intelligence", {
+-- register a attribute w/ an initial value
+player_attributes.api.register_attribute("intelligence", {
     initial = 10,
 })
 
--- register a discrete stat
-player_stats.api.register_stat("flags", {
+-- register a discrete attribute
+player_attributes.api.register_attribute("flags", {
     default = {},
     compose = function(values)
         local all_flags = {}
@@ -38,11 +44,11 @@ player_stats.api.register_stat("flags", {
 })
 
 -- set some flags
-player_stats.api.set_stat_value(player, "flags", "something1", {happy = true, free = true})
-player_stats.api.set_stat_value(player, "flags", "something2", {happy = true, slappy = true})
+player_attributes.api.set_value(player, "flags", "something1", {happy = true, free = true})
+player_attributes.api.set_value(player, "flags", "something2", {happy = true, slappy = true})
 
 -- get flags
-print(dump(player_stats.api.get_stat(player, "flags"))) --[[
+print(dump(player_attributes.api.get_attribute(player, "flags"))) --[[
 {
     happy = true,
     free = true,
@@ -50,10 +56,10 @@ print(dump(player_stats.api.get_stat(player, "flags"))) --[[
 }
 ]]
 
-player_stats.api.set_stat_value(player, "flags", "something1", nil)
+player_attributes.api.set_value(player, "flags", "something1", nil)
 
 -- get flags
-print(dump(player_stats.api.get_stat(player, "flags"))) --[[
+print(dump(player_attributes.api.get_attribute(player, "flags"))) --[[
 {
     happy = true,
     slappy = true,
@@ -61,5 +67,5 @@ print(dump(player_stats.api.get_stat(player, "flags"))) --[[
 ]]
 ```
 
-temporary stats: managing these is still the responsibility of the registering mod, but they will not survive a
+temporary attributes: managing these is still the responsibility of the registering mod, but they will not survive a
                  server restart, so that mods don't have to do a bunch of cleanup on initialization.
