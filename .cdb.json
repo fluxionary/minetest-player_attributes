@@ -1,13 +1,11 @@
 {
     "type": "MOD",
     "name": "player_attributes",
-    "title": "player_attributes",
-    "dev_state": "ALPHA",
-    "tags": "",
-    "license": "AGPL-3.0-or-later",
-    "media_license": "CC-BY-SA-4.0",
+    "title": "player attributes",
+    "short_description": "API for defining abstract, compositional player attributes which can be used for various things",
     "repo": "https://github.com/fluxionary/minetest-player_attributes.git",
     "website": "https://github.com/fluxionary/minetest-player_attributes",
     "issue_tracker": "https://github.com/fluxionary/minetest-player_attributes/issues",
-    "short_description": "hello, can you tell me what i am?",
+    "license": "AGPL-3.0-or-later",
+    "media_license": "CC-BY-SA-4.0"
 }
