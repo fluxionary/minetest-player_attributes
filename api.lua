@@ -84,11 +84,11 @@ function player_attributes.register_attribute(name, def)
 	player_attributes.registered_attributes[name] = def
 end
 
-function player_attributes.get_attribute(player, attribute_name)
-	if minetest.is_player(player) then
-		player = player:get_player_name()
+function player_attributes.get_attribute(player_or_name, attribute_name)
+	if minetest.is_player(player_or_name) then
+		player_or_name = player_or_name:get_player_name()
 	end
-	return attributes_by_player_name[player][attribute_name]
+	return attributes_by_player_name[player_or_name][attribute_name]
 		or player_attributes.registered_attributes[attribute_name].default
 end
 
@@ -96,41 +96,41 @@ function player_attributes.register_on_attribute_change(attribute_name, callback
 	table.insert(player_attributes.registered_on_attribute_changes[attribute_name], callback)
 end
 
-function player_attributes.do_on_attribute_change(player, attribute_name, prev_value, current_value)
-	if minetest.is_player(player) then
-		player = player:get_player_name()
+function player_attributes.do_on_attribute_change(player_or_name, attribute_name, prev_value, current_value)
+	if minetest.is_player(player_or_name) then
+		player_or_name = player_or_name:get_player_name()
 	end
 
 	for _, callback in ipairs(player_attributes.registered_on_attribute_changes[attribute_name]) do
-		callback(player, prev_value, current_value)
+		callback(player_or_name, prev_value, current_value)
 	end
 end
 
-function player_attributes.set_value(player, attribute_name, key, value)
-	if minetest.is_player(player) then
-		player = player:get_player_name()
+function player_attributes.set_value(player_or_name, attribute_name, key, value)
+	if minetest.is_player(player_or_name) then
+		player_or_name = player_or_name:get_player_name()
 	end
-	local prev_value = player_attributes.get_attribute(player, attribute_name)
-	local attribute_values = get_attribute_values(player, attribute_name)
+	local prev_value = player_attributes.get_attribute(player_or_name, attribute_name)
+	local attribute_values = get_attribute_values(player_or_name, attribute_name)
 	attribute_values[key] = value
-	set_attribute_values(player, attribute_name, attribute_values)
-	local current_value = player_attributes.get_attribute(player, attribute_name)
+	set_attribute_values(player_or_name, attribute_name, attribute_values)
+	local current_value = player_attributes.get_attribute(player_or_name, attribute_name)
 	local attribute_def = player_attributes.registered_attributes[attribute_name]
 	if not attribute_def.equals(prev_value, current_value) then
-		player_attributes.do_on_attribute_change(player, attribute_name, prev_value, current_value)
+		player_attributes.do_on_attribute_change(player_or_name, attribute_name, prev_value, current_value)
 	end
 end
 
-function player_attributes.set_tmp_value(player, attribute_name, key, value)
-	if minetest.is_player(player) then
-		player = player:get_player_name()
+function player_attributes.set_tmp_value(player_or_name, attribute_name, key, value)
+	if minetest.is_player(player_or_name) then
+		player_or_name = player_or_name:get_player_name()
 	end
-	local prev_value = player_attributes.get_attribute(player, attribute_name)
-	tmp_attribute_values_by_player_name[player][attribute_name][key] = value
-	attributes_by_player_name[player] = compose_attribute(player, attribute_name)
-	local current_value = player_attributes.get_attribute(player, attribute_name)
+	local prev_value = player_attributes.get_attribute(player_or_name, attribute_name)
+	tmp_attribute_values_by_player_name[player_or_name][attribute_name][key] = value
+	attributes_by_player_name[player_or_name] = compose_attribute(player_or_name, attribute_name)
+	local current_value = player_attributes.get_attribute(player_or_name, attribute_name)
 	local attribute_def = player_attributes.registered_attributes[attribute_name]
 	if not attribute_def.equals(prev_value, current_value) then
-		player_attributes.do_on_attribute_change(player, attribute_name, prev_value, current_value)
+		player_attributes.do_on_attribute_change(player_or_name, attribute_name, prev_value, current_value)
 	end
 end
