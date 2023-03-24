@@ -1,71 +1,45 @@
 # player_attributes
 
-API for defining abstract, compositional player attributes which can be used for various things.
+API for defining abstract player attributes which can be used for various things.
 
-these are sort of like player_monoids, but with optional persistence, a unified means of accessing the values,
-and without anything binding them to "real" quantities like player physics.
+these are sort of like player_monoids, but with persistence and a unified means of accessing the values.
 
 these attributes are intended to be affected by some mods (e.g. magic systems or hunger systems) and
-trigger effects controlled by other mods (e.g. attributeus effects).
-
-temporary attributes: managing these is still the responsibility of the registering mod, but they will not survive a
-                      server restart, so that mods don't have to do a bunch of cleanup on initialization.
+trigger effects controlled by other mods (e.g. player effects).
 
 ```lua
-local player
+local flux = minetest.get_player_by_name("flux")
 
--- register a basic attribute
-player_attributes.register_attribute("strength")
-
--- register a attribute w/ an initial value
-player_attributes.register_attribute("intelligence", {
-    initial = 10,
+-- simpled attribute whose value is managed by a persistent monoid
+local strength = player_attributes.register_attribute("strength", {
+    base = 10,
+    fold = function(self, values)
+        return player_attributes.util.sum_values(values, self.base)
+    end,
 })
 
--- add some strength due to player level
-if xp_redo.get_xp > 1000 then
-    player_attributes.set_value(player, "strength", "xp_redo:level", 5)
-end
+strength = player_attributes.get_attribute("strength")  -- alternate means of getting access
 
--- add some strength due to temporary effect
-player_attributes.set_tmp_value(player, "strength", "potions:strength", 1)
+strength.register_on_change(function(player, new_value, old_value)
+    print("something")
+end)
 
--- get attribute
-player_attributes.get_attribute(player, "strength") -- 6
+strength:add(flux, "xp_redo:level", 1) -- overrides any previous value of "xp_redo:level"
 
--- remove strength due to temporary effect
-player_attributes.set_tmp_value(player, "strength", "potions:strength", nil)
-
--- register a discrete attribute
-player_attributes.register_attribute("flags", {
-    default = {},
-    compose = function(values)
-        local all_flags = {}
-        for _, flags in ipairs(values) do
-            for flag in pairs(flags) do
-                all_flags[flag] = true
-            end
-        end
-        return all_flags
-    end
+-- attribute whose maximum is managed by a monoid
+local stamina = player_attributes.register_bounded_attribute("stamina", {
+    min = 0,
+    base = 120,
+    base_max = 120,
+    fold_max = function(self, values)
+        return player_attributes.util.sum_values(values, self.base_max)
+    end,
 })
 
--- set some flags
-player_attributes.set_value(player, "flags", "something1", {happy = true, free = true})
-player_attributes.set_value(player, "flags", "something2", {happy = true, slappy = true})
+print(stamina:get(flux))
+print(stamina:get_max(flux))
+print(stamina:get_min(flux))
 
--- get flags
-print(dump(player_attributes.get_attribute(player, "flags"))) --[[{
-    happy = true,
-    free = true,
-    slappy = true,
-}]]
+stamina:set(flux, stamina:get(flux) - 20, "exhaustion")
 
-player_attributes.set_value(player, "flags", "something1", nil)
-
--- get flags
-print(dump(player_attributes.get_attribute(player, "flags"))) --[[{
-    happy = true,
-    slappy = true,
-}]]
 ```

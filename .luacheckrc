@@ -652,5 +652,6 @@ stds.player_attributes = {
 	read_globals = {
 		"fmod",
 		"futil",
+		"persistent_monoids",
 	},
 }
