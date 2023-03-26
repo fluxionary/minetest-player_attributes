@@ -1,7 +1,9 @@
+local s = player_attributes.settings
+
 player_attributes.register_bounded_attribute("hp", {
 	min = 0,
-	base = minetest.PLAYER_MAX_HP_DEFAULT,
-	base_max = minetest.PLAYER_MAX_HP_DEFAULT,
+	base = s.default_hp_max or minetest.PLAYER_MAX_HP_DEFAULT,
+	base_max = s.default_hp_max or minetest.PLAYER_MAX_HP_DEFAULT,
 	get = function(self, player)
 		return player:get_hp()
 	end,

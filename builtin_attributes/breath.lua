@@ -1,7 +1,9 @@
+local s = player_attributes.settings
+
 player_attributes.register_bounded_attribute("breath", {
 	min = 0,
-	base = minetest.PLAYER_MAX_BREATH_DEFAULT,
-	base_max = minetest.PLAYER_MAX_BREATH_DEFAULT,
+	base = s.default_breath_max or minetest.PLAYER_MAX_BREATH_DEFAULT,
+	base_max = s.default_breath_max or minetest.PLAYER_MAX_BREATH_DEFAULT,
 	get = function(self, player)
 		return player:get_breath()
 	end,

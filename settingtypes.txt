@@ -1,0 +1,5 @@
+# defaults to minetest.PLAYER_MAX_BREATH_DEFAULT
+player_attributes:default_breath_max (default hp max) int
+
+# defaults to minetest.PLAYER_MAX_HP_DEFAULT
+player_attributes:default_hp_max (default hp max) int
