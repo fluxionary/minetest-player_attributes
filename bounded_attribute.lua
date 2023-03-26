@@ -15,19 +15,23 @@ function BoundedAttribute:_init(name, def)
 
 	self.get = def.get
 		or function(self_, player)
-			return futil.math.bound(
-				self_:get_min(player),
-				def.cast(player:get_meta():get(value_key)) or self_.base,
-				self_:get_max(player)
-			)
+			local min = self_:get_min(player)
+			local value = def.cast(player:get_meta():get(value_key)) or def.base
+
+			local max = self_:get_max(player)
+			return futil.math.bound(min, value, max)
 		end
 
 	self.set = def.set
 		or function(self_, player, value)
 			local old_value = self_:get(player)
-			value = math.max(self_:get_min(player), math.min(value), self_:get_max(player))
-			for i = 1, #self_._registered_on_changes do
-				value = self_._registered_on_changes[i](self_, player, value, old_value) or value
+			local min = self_:get_min(player)
+			local max = self_:get_max(player)
+			value = futil.math.bound(min, value, max)
+			if value ~= old_value then
+				for i = 1, #self_._registered_on_changes do
+					value = self_._registered_on_changes[i](self_, player, value, old_value) or value
+				end
 			end
 			player:get_meta():set_string(value_key, tostring(value))
 			return value
@@ -47,8 +51,10 @@ function BoundedAttribute:_init(name, def)
 				return def.fold_min(self, t)
 			end,
 			on_change = function(old_total, new_total, player)
-				for _, callback in ipairs(self._registered_on_min_changes) do
-					callback(self, player, new_total, old_total)
+				if old_total ~= new_total then
+					for _, callback in ipairs(self._registered_on_min_changes) do
+						callback(self, player, new_total, old_total)
+					end
 				end
 			end,
 		}
@@ -70,14 +76,20 @@ function BoundedAttribute:_init(name, def)
 				return def.fold_max(self, t)
 			end,
 			on_change = function(old_total, new_total, player)
-				for _, callback in ipairs(self._registered_on_max_changes) do
-					callback(self, player, new_total, old_total)
+				if old_total ~= new_total then
+					for _, callback in ipairs(self._registered_on_max_changes) do
+						callback(self, player, new_total, old_total)
+					end
 				end
 			end,
 		}
 
 		self._max_monoid = persistent_monoids.make_monoid(f("player_attribute_max:%s", name), monoid_def)
 	end
+end
+
+function BoundedAttribute:register_on_change(callback)
+	table.insert(self._registered_on_changes, callback)
 end
 
 function BoundedAttribute:register_on_min_change(callback)
