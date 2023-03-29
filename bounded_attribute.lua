@@ -15,9 +15,9 @@ function BoundedAttribute:_init(name, def)
 
 	self.get = def.get
 		or function(self_, player)
+			local meta = player:get_meta()
 			local min = self_:get_min(player)
-			local value = def.cast(player:get_meta():get(value_key)) or def.base
-
+			local value = def.cast(meta:get(value_key)) or def.base
 			local max = self_:get_max(player)
 			return futil.math.bound(min, value, max)
 		end
