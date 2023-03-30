@@ -42,9 +42,10 @@ function BoundedAttribute:_init(name, def)
 	else
 		self._registered_on_min_changes = { def.apply_min }
 
-		def.fold_min = def.fold_min or function(self_, values)
-			return sum_values(values, def.base_min)
-		end
+		def.fold_min = def.fold_min
+			or function(self_, values)
+				return math.min(sum_values(values, def.base_min), self:get_max())
+			end
 
 		local monoid_def = {
 			fold = function(t)
@@ -67,9 +68,10 @@ function BoundedAttribute:_init(name, def)
 	else
 		self._registered_on_max_changes = { def.apply_max }
 
-		def.fold_max = def.fold_max or function(self_, values)
-			return sum_values(values, def.base_max)
-		end
+		def.fold_max = def.fold_max
+			or function(self_, values)
+				return math.max(self:get_min(), sum_values(values, def.base_max))
+			end
 
 		local monoid_def = {
 			fold = function(t)
