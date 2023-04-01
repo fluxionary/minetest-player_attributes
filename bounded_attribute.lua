@@ -33,6 +33,7 @@ function BoundedAttribute:_init(name, def)
 					value = self_._registered_on_changes[i](self_, player, value, old_value) or value
 				end
 			end
+			value = futil.math.bound(min, value, max)
 			player:get_meta():set_string(value_key, tostring(value))
 			return value
 		end
