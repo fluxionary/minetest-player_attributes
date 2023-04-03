@@ -8,11 +8,12 @@ local hp = player_attributes.register_bounded_attribute("hp", {
 		return player:get_hp()
 	end,
 	set = function(self, player, value, reason)
+		value = math.round(value)
 		player:set_hp(value, reason)
 		return player:get_hp()
 	end,
 	apply_max = function(self, player, value, reason)
-		minetest.chat_send_all(string.format("%s %s %s", player:get_player_name(), value, reason))
+		value = math.round(value)
 		if self:get(player) > value then
 			self:set(player, value, { reason = "set_hp", cause = reason })
 		end

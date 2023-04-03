@@ -8,10 +8,12 @@ local breath = player_attributes.register_bounded_attribute("breath", {
 		return player:get_breath()
 	end,
 	set = function(self, player, value, reason)
+		value = math.round(value)
 		player:set_breath(value)
 		return player:get_breath()
 	end,
 	apply_max = function(self, player, value, reason)
+		value = math.round(value)
 		if self:get(player) > value then
 			self:set(player, value)
 		end
