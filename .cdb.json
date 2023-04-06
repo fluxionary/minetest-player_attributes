@@ -2,7 +2,7 @@
     "type": "MOD",
     "name": "player_attributes",
     "title": "player attributes",
-    "short_description": "API for defining abstract, compositional player attributes which can be used for various things",
+    "short_description": "API for defining abstract, compositional player attributes",
     "repo": "https://github.com/fluxionary/minetest-player_attributes.git",
     "website": "https://github.com/fluxionary/minetest-player_attributes",
     "issue_tracker": "https://github.com/fluxionary/minetest-player_attributes/issues",
