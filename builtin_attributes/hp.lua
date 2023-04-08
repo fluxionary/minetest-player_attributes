@@ -13,10 +13,6 @@ local hp = player_attributes.register_bounded_attribute("hp", {
 		return player:get_hp()
 	end,
 	apply_max = function(self, player, value, reason)
-		value = math.round(value)
-		if self:get(player) > value then
-			self:set(player, value, { reason = "set_hp", cause = reason })
-		end
 		local properties = player:get_properties()
 		properties.hp_max = value
 		player:set_properties(properties)
