@@ -2,10 +2,13 @@ name: pre-commit
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
 
     steps:
+      - name: update
+        run: sudo apt-get update -y
+
       - uses: actions/checkout@master
       - uses: actions/setup-python@master
 
