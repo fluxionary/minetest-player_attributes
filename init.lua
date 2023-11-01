@@ -1,4 +1,4 @@
-futil.check_version({ year = 2022, month = 11, day = 22 })
+futil.check_version({ year = 2023, month = 11, day = 1 }) -- is_player
 
 player_attributes = fmod.create()
 

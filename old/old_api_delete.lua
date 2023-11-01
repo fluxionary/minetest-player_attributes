@@ -84,11 +84,20 @@ function player_attributes.register_attribute(name, def)
 	player_attributes.registered_attributes[name] = def
 end
 
-function player_attributes.get_attribute(player_or_name, attribute_name)
-	if minetest.is_player(player_or_name) then
-		player_or_name = player_or_name:get_player_name()
+local function get_name(player_or_name)
+	if type(player_or_name) == "string" then
+		return player_or_name
+	elseif futil.is_player(player_or_name) then
+		return player_or_name:get_player_name()
 	end
-	return attributes_by_player_name[player_or_name][attribute_name]
+end
+
+function player_attributes.get_attribute(player_or_name, attribute_name)
+	local name = get_name(player_or_name)
+	if not name then
+		return
+	end
+	return attributes_by_player_name[name][attribute_name]
 		or player_attributes.registered_attributes[attribute_name].default
 end
 
@@ -97,40 +106,43 @@ function player_attributes.register_on_attribute_change(attribute_name, callback
 end
 
 function player_attributes.do_on_attribute_change(player_or_name, attribute_name, prev_value, current_value)
-	if minetest.is_player(player_or_name) then
-		player_or_name = player_or_name:get_player_name()
+	local name = get_name(player_or_name)
+	if not name then
+		return
 	end
 
-	for _, callback in ipairs(player_attributes.registered_on_attribute_changes[attribute_name]) do
-		callback(player_or_name, prev_value, current_value)
+	for _, callback in ipairs(player_attributes.registered_on_attribute_changes[name]) do
+		callback(name, prev_value, current_value)
 	end
 end
 
 function player_attributes.set_value(player_or_name, attribute_name, key, value)
-	if minetest.is_player(player_or_name) then
-		player_or_name = player_or_name:get_player_name()
+	local name = get_name(player_or_name)
+	if not name then
+		return
 	end
-	local prev_value = player_attributes.get_attribute(player_or_name, attribute_name)
-	local attribute_values = get_attribute_values(player_or_name, attribute_name)
+	local prev_value = player_attributes.get_attribute(name, attribute_name)
+	local attribute_values = get_attribute_values(name, attribute_name)
 	attribute_values[key] = value
-	set_attribute_values(player_or_name, attribute_name, attribute_values)
-	local current_value = player_attributes.get_attribute(player_or_name, attribute_name)
+	set_attribute_values(name, attribute_name, attribute_values)
+	local current_value = player_attributes.get_attribute(name, attribute_name)
 	local attribute_def = player_attributes.registered_attributes[attribute_name]
 	if not attribute_def.equals(prev_value, current_value) then
-		player_attributes.do_on_attribute_change(player_or_name, attribute_name, prev_value, current_value)
+		player_attributes.do_on_attribute_change(name, attribute_name, prev_value, current_value)
 	end
 end
 
 function player_attributes.set_tmp_value(player_or_name, attribute_name, key, value)
-	if minetest.is_player(player_or_name) then
-		player_or_name = player_or_name:get_player_name()
+	local name = get_name(player_or_name)
+	if not name then
+		return
 	end
-	local prev_value = player_attributes.get_attribute(player_or_name, attribute_name)
-	tmp_attribute_values_by_player_name[player_or_name][attribute_name][key] = value
-	attributes_by_player_name[player_or_name] = compose_attribute(player_or_name, attribute_name)
-	local current_value = player_attributes.get_attribute(player_or_name, attribute_name)
+	local prev_value = player_attributes.get_attribute(name, attribute_name)
+	tmp_attribute_values_by_player_name[name][attribute_name][key] = value
+	attributes_by_player_name[name] = compose_attribute(name, attribute_name)
+	local current_value = player_attributes.get_attribute(name, attribute_name)
 	local attribute_def = player_attributes.registered_attributes[attribute_name]
 	if not attribute_def.equals(prev_value, current_value) then
-		player_attributes.do_on_attribute_change(player_or_name, attribute_name, prev_value, current_value)
+		player_attributes.do_on_attribute_change(name, attribute_name, prev_value, current_value)
 	end
 end
